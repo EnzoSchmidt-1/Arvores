@@ -5,8 +5,8 @@ public class ArvoreBinaria {
         this.raiz = new No(null);
     }
 
-    public void inserir(Integer conteudo) {
-        No novoNo = new No(conteudo);
+    public void inserir(Integer buscado) {
+        No novoNo = new No(buscado);
         //inserirRecursivo(novoNo, this.raiz);
         inserirIterativo(novoNo);
     }
@@ -112,52 +112,48 @@ public class ArvoreBinaria {
 
     //Adicionar um metodo para remover um nó da arvore
 
-    public void remover(Integer conteudo){
-        No novoNo = new No(conteudo);
-        removerProcesso(novoNo, this.raiz, conteudo);
-        novoNo = removerProcesso(novoNo, novoNo, conteudo);
+    public void remover(Integer buscado){
+        No novoNo = new No(buscado);
+        novoNo = removerProcesso(this.raiz, buscado);
 
     }
 
-    private No removerProcesso(No no, No atual, Integer conteudo) {
+    private No removerProcesso(No atual, Integer buscado) {
         if (estaVazia()) {
             return null;
         }
-        if(atual.getConteudo() != conteudo) {
+        if(atual.getConteudo() != buscado) {
 
-            if (atual.getConteudo() > conteudo) {
-                removerProcesso(no, atual.getEsquerda(), conteudo);
-                            
+            if (atual.getConteudo() > buscado) {
+
+                return removerProcesso(atual.getEsquerda(), buscado);
             } 
             
-            if (atual.getConteudo() < conteudo) {
-                removerProcesso(no, atual.getDireita(), conteudo);
-            }
-
-            if (atual.getConteudo() == conteudo) {
-                if (atual.getEsquerda() == null && atual.getDireita() == null) {
-                    atual.setConteudo(null);
-                }else if (atual.getDireita() != null && atual.getEsquerda() != null) {
-
-                }else if (atual.getDireita() == null || atual.getEsquerda() == null) {
-                    if (atual.getDireita() != null) {
-                        atual.setConteudo(atual.getDireita().getConteudo());
-                        atual.setDireita(atual.getDireita().getDireita());
-                        
-                    }else {
-                        atual.setConteudo(atual.getEsquerda().getConteudo());
-                        atual.setEsquerda(atual.getEsquerda().getEsquerda());
-                        atual.setDireita(atual.getEsquerda().getDireita());
-                    }
-                    
-                }
+            if (atual.getConteudo() < buscado) {
+                return removerProcesso(atual.getDireita(), buscado);
             }
             
         }else if (atual.getDireita() == null && atual.getEsquerda() == null) {
             atual = null;
-            return atual;       
+            return atual; 
 
         }else if (atual.getDireita() != null && atual.getEsquerda() != null) {
+            //Originamente eu tinha tentado dar pro atual o buscado do proximo e depois apagar o proximo.
+            //So q isso não estava dando certo então eu criei uma variavel com o valor de proximo.
+            No proximo = atual.getEsquerda();
+            No paiProximo = atual;
+            while(proximo.getDireita() != null){
+                paiProximo = proximo;
+                proximo = proximo.getDireita();
+            }
+            Integer valorTroca = proximo.getConteudo();
+            if (paiProximo == atual) {
+                paiProximo.setEsquerda(removerProcesso(proximo, valorTroca));
+            }else {
+                paiProximo.setDireita(removerProcesso(proximo, valorTroca)); 
+            }
+            atual.setConteudo(valorTroca);
+
             
         }else if (atual.getDireita() == null || atual.getEsquerda() == null) {
             if (atual.getDireita() != null) {
